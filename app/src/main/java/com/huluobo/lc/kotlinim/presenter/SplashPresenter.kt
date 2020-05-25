@@ -1,6 +1,7 @@
 package com.huluobo.lc.kotlinim.presenter
 
 import com.huluobo.lc.kotlinim.contract.SplashContract
+import com.hyphenate.chat.EMClient
 
 /**
  * @author Lc
@@ -12,6 +13,8 @@ class SplashPresenter(private val view: SplashContract.View) : SplashContract.Pr
         if (isLoggedIn()) view.onLoggedIn() else view.onNotLoggedIn()
     }
 
-    private fun isLoggedIn(): Boolean = false
+    //是否登录到环信的服务器
+    private fun isLoggedIn(): Boolean =
+        EMClient.getInstance().isConnected && EMClient.getInstance().isLoggedInBefore
 
 }
