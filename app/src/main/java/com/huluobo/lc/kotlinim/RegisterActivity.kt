@@ -2,10 +2,32 @@ package com.huluobo.lc.kotlinim
 
 import com.huluobo.lc.kotlinim.base.BaseActivity
 import com.huluobo.lc.kotlinim.contract.RegisterContract
+import com.huluobo.lc.kotlinim.presenter.RegisterPresenter
 import kotlinx.android.synthetic.main.activity_register.*
 import org.jetbrains.anko.toast
 
 class RegisterActivity : BaseActivity(), RegisterContract.View {
+
+    private val presenter = RegisterPresenter(this)
+
+    override fun init() {
+        super.init()
+        register.setOnClickListener { register() }
+        confirmPassword.setOnEditorActionListener { _, _, _ ->
+            register()
+            true
+        }
+    }
+
+    private fun register() {
+        //隐藏软键盘
+        hideSoftKeyboard()
+        val userNameString = userName.text.trim().toString()
+        val passwordString = password.text.trim().toString()
+        val confirmPasswordString = confirmPassword.text.trim().toString()
+        presenter.register(userNameString, passwordString, confirmPasswordString)
+    }
+
     override fun getLayoutResId(): Int = R.layout.activity_register
     override fun onUserNameError() {
         userName.error = getString(R.string.user_name_error)
