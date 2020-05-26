@@ -23,7 +23,7 @@ abstract class BaseActivity : AppCompatActivity() {
         init()
     }
 
-    val inputMethodManager by lazy {
+    private val inputMethodManager by lazy {
         getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
