@@ -1,5 +1,6 @@
 package com.huluobo.lc.kotlinim.presenter
 
+import com.huluobo.lc.kotlinim.adapter.EMCallbackAdapter
 import com.huluobo.lc.kotlinim.contract.LoginContract
 import com.huluobo.lc.kotlinim.extentions.isValidPassword
 import com.huluobo.lc.kotlinim.extentions.isValidUserName
@@ -24,16 +25,12 @@ class LoginPresenter(val view: LoginContract.View) : LoginContract.Presenter {
     }
 
     private fun loginEaseMob(userName: String, password: String) {
-        EMClient.getInstance().login(userName, password, object : EMCallBack {
+        EMClient.getInstance().login(userName, password, object : EMCallbackAdapter() {
             //在子线程回调
             override fun onSuccess() {
                 EMClient.getInstance().groupManager().loadAllGroups()
                 EMClient.getInstance().chatManager().loadAllConversations()
                 uiThread { view.onLoggedInSuccess() }
-            }
-
-            override fun onProgress(progress: Int, status: String?) {
-                TODO("Not yet implemented")
             }
 
             override fun onError(code: Int, error: String?) {
