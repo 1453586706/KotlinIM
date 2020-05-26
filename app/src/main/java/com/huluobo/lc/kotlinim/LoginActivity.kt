@@ -13,7 +13,7 @@ import org.jetbrains.anko.toast
  * @date :2020/5/25 16:40
  */
 class LoginActivity : BaseActivity(), LoginContract.View {
-    val presenter = LoginPresenter(this)
+    private val presenter = LoginPresenter(this)
 
     override fun init() {
         super.init()
@@ -25,6 +25,8 @@ class LoginActivity : BaseActivity(), LoginContract.View {
     }
 
     private fun login() {
+        //隐藏软键盘
+        hideSoftKeyboard()
         val userNameString = userName.text.trim().toString()
         val passwordString = password.text.trim().toString()
         presenter.login(userNameString, passwordString)

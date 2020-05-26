@@ -1,7 +1,9 @@
 package com.huluobo.lc.kotlinim.base
 
 import android.app.ProgressDialog
+import android.content.Context
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 
 /**
@@ -11,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
  */
 abstract class BaseActivity : AppCompatActivity() {
 
-    val progressDialog by lazy {
+    private val progressDialog by lazy {
         ProgressDialog(this)
     }
 
@@ -19,6 +21,10 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(getLayoutResId())
         init()
+    }
+
+    val inputMethodManager by lazy {
+        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
     open fun init() {
@@ -34,7 +40,11 @@ abstract class BaseActivity : AppCompatActivity() {
         progressDialog.show()
     }
 
-    fun dimissProgress(){
+    fun dimissProgress() {
         progressDialog.dismiss()
+    }
+
+    fun hideSoftKeyboard() {
+        inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
     }
 }
