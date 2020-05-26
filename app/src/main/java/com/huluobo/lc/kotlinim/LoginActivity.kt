@@ -2,6 +2,7 @@ package com.huluobo.lc.kotlinim
 
 import com.huluobo.lc.kotlinim.base.BaseActivity
 import com.huluobo.lc.kotlinim.contract.LoginContract
+import com.huluobo.lc.kotlinim.presenter.LoginPresenter
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
@@ -12,6 +13,23 @@ import org.jetbrains.anko.toast
  * @date :2020/5/25 16:40
  */
 class LoginActivity : BaseActivity(), LoginContract.View {
+    val presenter = LoginPresenter(this)
+
+    override fun init() {
+        super.init()
+        login.setOnClickListener { login() }
+        password.setOnEditorActionListener { _, _, _ ->
+            login()
+            true
+        }
+    }
+
+    private fun login() {
+        val userNameString = userName.text.trim().toString()
+        val passwordString = password.text.trim().toString()
+        presenter.login(userNameString, passwordString)
+    }
+
     override fun getLayoutResId(): Int = R.layout.activity_login
     override fun onUserNameError() {
         userName.error = getString(R.string.user_name_error)
