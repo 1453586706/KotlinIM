@@ -1,5 +1,6 @@
 package com.huluobo.lc.kotlinim.presenter
 
+import android.util.Log
 import cn.bmob.v3.BmobUser
 import cn.bmob.v3.exception.BmobException
 import cn.bmob.v3.listener.SaveListener
@@ -16,6 +17,7 @@ import org.jetbrains.anko.doAsync
  * @date :2020/5/26 17:07
  */
 class RegisterPresenter(val view: RegisterContract.View) : RegisterContract.Presenter {
+    val TAG = "RegisterPresenter"
     override fun register(userName: String, password: String, confirmPassword: String) {
         if (userName.isValidUserName()) {
             //检查密码
@@ -44,6 +46,7 @@ class RegisterPresenter(val view: RegisterContract.View) : RegisterContract.Pres
                     registerEaseMob(userName, password)
                 } else {
                     //注册失败
+                    Log.i(TAG, "注册Bmob失败:" + e.message)
                     view.onRegisterFailed()
                 }
             }
@@ -59,6 +62,7 @@ class RegisterPresenter(val view: RegisterContract.View) : RegisterContract.Pres
             } catch (e: HyphenateException) {
                 //注册失败
                 uiThread { view.onRegisterFailed() }
+                Log.i(TAG, "注册环信失败:" + e.message)
             }
         }
 
