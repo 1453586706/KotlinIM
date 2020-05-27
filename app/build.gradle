@@ -66,5 +66,7 @@ dependencies {
     implementation 'com.squareup.okio:okio:2.2.2'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.14.1'
+    
+    //解决65535方法数量
     implementation 'com.android.support:multidex:1.0.3'
 }
