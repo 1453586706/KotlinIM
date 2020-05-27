@@ -6,6 +6,9 @@ import cn.bmob.v3.listener.SaveListener
 import com.huluobo.lc.kotlinim.contract.RegisterContract
 import com.huluobo.lc.kotlinim.extentions.isValidPassword
 import com.huluobo.lc.kotlinim.extentions.isValidUserName
+import com.hyphenate.chat.EMClient
+import com.hyphenate.exceptions.HyphenateException
+import org.jetbrains.anko.doAsync
 
 /**
  * @author Lc
@@ -38,12 +41,26 @@ class RegisterPresenter(val view: RegisterContract.View) : RegisterContract.Pres
                 if (e == null) {
                     //注册成功
                     //注册到环信,(公司流程)从服务器直接注册到环信服务器,返回给app是成功或者失败的消息
-
+                    registerEaseMob(userName, password)
                 } else {
                     //注册失败
                     view.onRegisterFailed()
                 }
             }
         })
+    }
+
+    private fun registerEaseMob(userName: String, password: String) {
+        doAsync {
+            try {
+                EMClient.getInstance().createAccount(userName, password)//同步方法
+                //注册成功
+                uiThread { view.onRegisterSuccess() }
+            } catch (e: HyphenateException) {
+                //注册失败
+                uiThread { view.onRegisterFailed() }
+            }
+        }
+
     }
 }
