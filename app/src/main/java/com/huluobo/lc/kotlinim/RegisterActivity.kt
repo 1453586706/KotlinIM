@@ -48,10 +48,16 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
     override fun onRegisterSuccess() {
         dimissProgress()
         finish()
+        toast(R.string.register_success)
     }
 
     override fun onRegisterFailed() {
         dimissProgress()
         toast(R.string.register_failed)
+    }
+
+    override fun onUserExist() {
+        dimissProgress()
+        toast(R.string.user_already_exist)
     }
 }

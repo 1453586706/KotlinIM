@@ -45,9 +45,11 @@ class RegisterPresenter(val view: RegisterContract.View) : RegisterContract.Pres
                     //注册到环信,(公司流程)从服务器直接注册到环信服务器,返回给app是成功或者失败的消息
                     registerEaseMob(userName, password)
                 } else {
-                    //注册失败
-                    Log.i(TAG, "注册Bmob失败:" + e.message)
-                    view.onRegisterFailed()
+                    if (e.errorCode == 202) {
+                        view.onUserExist()
+                    } else {
+                        view.onRegisterFailed()
+                    }
                 }
             }
         })
