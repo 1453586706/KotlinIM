@@ -1,6 +1,7 @@
-package com.huluobo.lc.kotlinim
+package com.huluobo.lc.kotlinim.ui.activity
 
 import android.os.Handler
+import com.huluobo.lc.kotlinim.R
 import com.huluobo.lc.kotlinim.base.BaseActivity
 import com.huluobo.lc.kotlinim.contract.SplashContract
 import com.huluobo.lc.kotlinim.presenter.SplashPresenter
@@ -12,7 +13,7 @@ import org.jetbrains.anko.startActivity
  * @date :2020/5/25 16:09
  */
 class SplashActivity : BaseActivity(), SplashContract.View {
-    val presenter = SplashPresenter(this)
+    private val presenter = SplashPresenter(this)
 
     companion object {
         const val DELAY = 2000L

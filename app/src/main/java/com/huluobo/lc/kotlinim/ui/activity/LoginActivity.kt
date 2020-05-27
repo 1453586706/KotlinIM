@@ -1,15 +1,14 @@
-package com.huluobo.lc.kotlinim
+package com.huluobo.lc.kotlinim.ui.activity
 
-import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
+import com.huluobo.lc.kotlinim.R
 import com.huluobo.lc.kotlinim.base.BaseActivity
 import com.huluobo.lc.kotlinim.contract.LoginContract
 import com.huluobo.lc.kotlinim.presenter.LoginPresenter
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
-import java.util.jar.Manifest
 
 /**
  * @author Lc
@@ -66,7 +65,8 @@ class LoginActivity : BaseActivity(), LoginContract.View {
         }else toast(R.string.permission_denied)
     }
 
-    override fun getLayoutResId(): Int = R.layout.activity_login
+    override fun getLayoutResId(): Int =
+        R.layout.activity_login
     override fun onUserNameError() {
         userName.error = getString(R.string.user_name_error)
     }

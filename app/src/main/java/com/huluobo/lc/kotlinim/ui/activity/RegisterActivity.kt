@@ -1,5 +1,6 @@
-package com.huluobo.lc.kotlinim
+package com.huluobo.lc.kotlinim.ui.activity
 
+import com.huluobo.lc.kotlinim.R
 import com.huluobo.lc.kotlinim.base.BaseActivity
 import com.huluobo.lc.kotlinim.contract.RegisterContract
 import com.huluobo.lc.kotlinim.presenter.RegisterPresenter
@@ -28,7 +29,8 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
         presenter.register(userNameString, passwordString, confirmPasswordString)
     }
 
-    override fun getLayoutResId(): Int = R.layout.activity_register
+    override fun getLayoutResId(): Int =
+        R.layout.activity_register
     override fun onUserNameError() {
         userName.error = getString(R.string.user_name_error)
     }
