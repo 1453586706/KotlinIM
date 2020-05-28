@@ -22,6 +22,5 @@ class AddFriendAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView
     }
 
     class AddFriendListItemViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
-
     }
 }
