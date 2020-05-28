@@ -10,6 +10,9 @@ import com.huluobo.lc.kotlinim.R
 import com.huluobo.lc.kotlinim.data.ContactListItem
 import com.huluobo.lc.kotlinim.ui.activity.ChatActivity
 import com.huluobo.lc.kotlinim.widget.ContactListItemView
+import com.hyphenate.EMCallBack
+import com.hyphenate.chat.EMClient
+import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 
@@ -51,8 +54,16 @@ class ContactListAdapter(
     }
 
     private fun deleteFriend(userName: String) {
-        context.toast("删除成功:$userName")
+        EMClient.getInstance().contactManager()
+            .aysncDeleteContact(userName, object : EMCallbackAdapter() {
+                override fun onSuccess() {
+                    context.runOnUiThread { toast(R.string.delete_friend_success) }
+                }
 
+                override fun onError(code: Int, error: String?) {
+                    context.runOnUiThread { toast(R.string.delete_friend_failed) }
+                }
+            })
     }
 
     class ContactListItemViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
