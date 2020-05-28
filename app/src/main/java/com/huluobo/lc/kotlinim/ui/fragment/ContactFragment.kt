@@ -1,5 +1,6 @@
 package com.huluobo.lc.kotlinim.ui.fragment
 
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.huluobo.lc.kotlinim.R
@@ -8,10 +9,13 @@ import com.huluobo.lc.kotlinim.adapter.EMContactListenterAdapter
 import com.huluobo.lc.kotlinim.base.BaseFragment
 import com.huluobo.lc.kotlinim.contract.ContactContact
 import com.huluobo.lc.kotlinim.presenter.ContactPresenter
+import com.huluobo.lc.kotlinim.ui.activity.AddFriendActivity
+import com.huluobo.lc.kotlinim.widget.SlideBar
 import com.hyphenate.EMContactListener
 import com.hyphenate.chat.EMClient
 import kotlinx.android.synthetic.main.fragment_contacts.*
 import kotlinx.android.synthetic.main.header.*
+import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 
 /**
@@ -20,6 +24,7 @@ import org.jetbrains.anko.toast
  * @date :2020/5/27 15:05
  */
 class ContactFragment : BaseFragment(), ContactContact.View {
+    val TAG = "ContactFragment"
     override fun getLayoutResId(): Int = R.layout.fragment_contacts
 
     val presenter = ContactPresenter(this)
@@ -28,6 +33,9 @@ class ContactFragment : BaseFragment(), ContactContact.View {
         super.init()
         headerTitle.text = getString(R.string.contact)
         add.visibility = View.VISIBLE
+        add.setOnClickListener {
+            context?.startActivity<AddFriendActivity>()
+        }
 
         swipeRefreshLayout.apply {
             //对当前控件或者类的创建者模式,kotlin高级语法
@@ -50,8 +58,29 @@ class ContactFragment : BaseFragment(), ContactContact.View {
                 }
             })
 
+        slideBar.onSectionChangeListener = object : SlideBar.OnSectionChangeListener {
+            override fun onSectionChange(firstLetter: String) {
+                section.visibility = View.VISIBLE
+                section.text = firstLetter
+                Log.i(TAG, "下标:" + getPosition(firstLetter))
+                recyclerView.smoothScrollToPosition(getPosition(firstLetter))
+                //TODO 需要修复下标为负
+            }
+
+            override fun onSlideFinish() {
+                section.visibility = View.GONE
+            }
+
+        }
+
         presenter.loadContacts()
     }
+
+    private fun getPosition(firstLetter: String): Int =
+        presenter.contactListItems.binarySearch { contactListItem ->
+            contactListItem.firstLetter.minus(firstLetter[0])
+        }
+
 
     override fun onLoadContactSuccess() {
         swipeRefreshLayout.isRefreshing = false

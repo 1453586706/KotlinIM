@@ -24,6 +24,8 @@ class SlideBar(context: Context?, attrs: AttributeSet? = null) : View(context, a
 
     var textBaseline = 0f
 
+    var onSectionChangeListener: OnSectionChangeListener? = null
+
     companion object {
         private val SECTIONS = arrayOf(
             "A",
@@ -90,14 +92,17 @@ class SlideBar(context: Context?, attrs: AttributeSet? = null) : View(context, a
                 //找到点击的字母
                 val index = getTouchIndex(event)
                 val firstLetter = SECTIONS[index]
-                Log.i(TAG, "当前触摸的大写字母:$firstLetter")
+                onSectionChangeListener?.onSectionChange(firstLetter)
             }
             MotionEvent.ACTION_MOVE -> {
                 val index = getTouchIndex(event)
                 val firstLetter = SECTIONS[index]
-                Log.i(TAG, "当前触摸移动的大写字母:$firstLetter")
+                onSectionChangeListener?.onSectionChange(firstLetter)
             }
-            MotionEvent.ACTION_UP -> setBackgroundColor(Color.TRANSPARENT)
+            MotionEvent.ACTION_UP -> {
+                setBackgroundColor(Color.TRANSPARENT)
+                onSectionChangeListener?.onSlideFinish()
+            }
         }
         return true//消费事件
     }
@@ -112,5 +117,10 @@ class SlideBar(context: Context?, attrs: AttributeSet? = null) : View(context, a
             index = SECTIONS.size - 1
         }
         return index
+    }
+
+    interface OnSectionChangeListener {
+        fun onSectionChange(firstLetter: String)
+        fun onSlideFinish()//滑动结束的回调
     }
 }
