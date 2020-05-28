@@ -2,8 +2,11 @@ package com.huluobo.lc.kotlinim.widget
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import com.huluobo.lc.kotlinim.R
 import org.jetbrains.anko.sp
@@ -14,6 +17,7 @@ import org.jetbrains.anko.sp
  * @date :2020/5/28 11:29
  */
 class SlideBar(context: Context?, attrs: AttributeSet? = null) : View(context, attrs) {
+    private val TAG = "SlideBar"
     var sectionHeight = 0f
 
     var paint = Paint()
@@ -77,5 +81,36 @@ class SlideBar(context: Context?, attrs: AttributeSet? = null) : View(context, a
             //更新Y,绘制下一个
             baseline += sectionHeight
         }
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        when (event?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                setBackgroundResource(R.drawable.bg_slide_bar)
+                //找到点击的字母
+                val index = getTouchIndex(event)
+                val firstLetter = SECTIONS[index]
+                Log.i(TAG, "当前触摸的大写字母:$firstLetter")
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val index = getTouchIndex(event)
+                val firstLetter = SECTIONS[index]
+                Log.i(TAG, "当前触摸移动的大写字母:$firstLetter")
+            }
+            MotionEvent.ACTION_UP -> setBackgroundColor(Color.TRANSPARENT)
+        }
+        return true//消费事件
+    }
+
+    //获取到点击位置的下标
+    private fun getTouchIndex(event: MotionEvent): Int {
+        var index = (event.y / sectionHeight).toInt()
+        //越界检查
+        if (index < 0) {
+            index = 0
+        } else if (index >= SECTIONS.size) {
+            index = SECTIONS.size - 1
+        }
+        return index
     }
 }
