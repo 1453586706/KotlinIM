@@ -4,9 +4,12 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.huluobo.lc.kotlinim.R
 import com.huluobo.lc.kotlinim.adapter.ContactListAdapter
+import com.huluobo.lc.kotlinim.adapter.EMContactListenterAdapter
 import com.huluobo.lc.kotlinim.base.BaseFragment
 import com.huluobo.lc.kotlinim.contract.ContactContact
 import com.huluobo.lc.kotlinim.presenter.ContactPresenter
+import com.hyphenate.EMContactListener
+import com.hyphenate.chat.EMClient
 import kotlinx.android.synthetic.main.fragment_contacts.*
 import kotlinx.android.synthetic.main.header.*
 import org.jetbrains.anko.toast
@@ -36,8 +39,16 @@ class ContactFragment : BaseFragment(), ContactContact.View {
         recyclerView.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
-            adapter = ContactListAdapter(context,presenter.contactListItems)
+            adapter = ContactListAdapter(context, presenter.contactListItems)
         }
+
+        EMClient.getInstance().contactManager()
+            .setContactListener(object : EMContactListenterAdapter() {
+                override fun onContactDeleted(username: String?) {
+                    //重新获取联系人数据
+                    presenter.loadContacts()
+                }
+            })
 
         presenter.loadContacts()
     }
