@@ -1,13 +1,17 @@
 package com.huluobo.lc.kotlinim.adapter
 
 import android.content.Context
+import android.content.DialogInterface
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import com.huluobo.lc.kotlinim.R
 import com.huluobo.lc.kotlinim.data.ContactListItem
 import com.huluobo.lc.kotlinim.ui.activity.ChatActivity
 import com.huluobo.lc.kotlinim.widget.ContactListItemView
 import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.toast
 
 /**
  * @author Lc
@@ -28,7 +32,27 @@ class ContactListAdapter(
         val contactListItemView = holder.itemView as ContactListItemView
         contactListItemView.bindView(contactListItems[position])
         val userName = contactListItems[position].userName
-        contactListItemView.setOnClickListener { context.startActivity<ChatActivity>("username" to userName) }
+        contactListItemView
+            .setOnClickListener { context.startActivity<ChatActivity>("username" to userName) }
+        contactListItemView.setOnLongClickListener {
+            val message = String.format(context.getString(R.string.delete_friend_message), userName)
+            AlertDialog.Builder(context).setTitle(R.string.delete_friend_title)
+                .setMessage(message)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(
+                    R.string.confirm
+                ) { _, _ ->
+                    deleteFriend(userName)
+                }
+                .show()
+            true
+        }
+
+    }
+
+    private fun deleteFriend(userName: String) {
+        context.toast("删除成功:$userName")
+
     }
 
     class ContactListItemViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
