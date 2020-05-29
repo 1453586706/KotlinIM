@@ -27,7 +27,7 @@ class AddFriendActivity : BaseActivity(), AddFriendContract.View {
         recyclerView.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
-            adapter = AddFriendAdapter(context)
+            adapter = AddFriendAdapter(context,presenter.addFriendItems)
         }
         search.setOnClickListener {
             search()
