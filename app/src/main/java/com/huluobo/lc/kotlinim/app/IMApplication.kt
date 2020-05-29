@@ -13,8 +13,13 @@ import com.hyphenate.chat.EMOptions
  * @date :2020/5/25 17:22
  */
 class IMApplication : Application() {
+    companion object {
+        lateinit var instance: IMApplication
+    }
+
     override fun onCreate() {
         super.onCreate()
+        instance = this
         MultiDex.install(this)
         //环信初始化
         EMClient.getInstance().init(applicationContext, EMOptions())
