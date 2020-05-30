@@ -1,5 +1,7 @@
 package com.huluobo.lc.kotlinim.contract
 
+import com.hyphenate.chat.EMMessage
+
 /**
  * @author Lc
  * @description:
@@ -8,6 +10,7 @@ package com.huluobo.lc.kotlinim.contract
 interface ChatContract {
     interface Presenter : BasePresenter {
         fun sendMessage(contact: String, message: String)
+        fun addMessage(username: String, messages: MutableList<EMMessage>?)
     }
 
     interface View {

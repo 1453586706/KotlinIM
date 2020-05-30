@@ -22,8 +22,8 @@ import java.util.*
 class SendMessageItemView(context: Context, attrs: AttributeSet? = null) :
     RelativeLayout(context, attrs) {
     private val TAG = "SendMessageItemView"
-    fun bindView(emMessage: EMMessage) {
-        updateTimestamp(emMessage)
+    fun bindView(emMessage: EMMessage, showTimestamp: Boolean) {
+        updateTimestamp(emMessage, showTimestamp)
         updateMessage(emMessage)
         updateProgress(emMessage)
     }
@@ -57,9 +57,14 @@ class SendMessageItemView(context: Context, attrs: AttributeSet? = null) :
         }
     }
 
-    private fun updateTimestamp(emMessage: EMMessage) {
-        Log.i(TAG, DateUtils.getTimestampString(Date(emMessage.msgTime)))
-        timestamp.text = DateUtils.getTimestampString(Date(emMessage.msgTime))
+    private fun updateTimestamp(
+        emMessage: EMMessage,
+        showTimestamp: Boolean
+    ) {
+        if (showTimestamp) {
+            timestamp.visibility = View.VISIBLE
+            timestamp.text = DateUtils.getTimestampString(Date(emMessage.msgTime))
+        } else timestamp.visibility = View.GONE
     }
 
     init {
