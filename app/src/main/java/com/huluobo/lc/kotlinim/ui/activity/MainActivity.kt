@@ -5,9 +5,13 @@ import com.huluobo.lc.kotlinim.R
 import com.huluobo.lc.kotlinim.adapter.EMMessageListenerAdapter
 import com.huluobo.lc.kotlinim.base.BaseActivity
 import com.huluobo.lc.kotlinim.factory.FragmentFactory
+import com.hyphenate.EMConnectionListener
+import com.hyphenate.EMError
 import com.hyphenate.chat.EMClient
 import com.hyphenate.chat.EMMessage
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.toast
 
 class MainActivity : BaseActivity() {
     override fun getLayoutResId(): Int = R.layout.activity_main
@@ -34,6 +38,21 @@ class MainActivity : BaseActivity() {
         }
 
         EMClient.getInstance().chatManager().addMessageListener(messageListener)
+        EMClient.getInstance().addConnectionListener(object : EMConnectionListener {
+            override fun onConnected() {
+
+            }
+
+            override fun onDisconnected(errorCode: Int) {
+                if (errorCode == EMError.USER_LOGIN_ANOTHER_DEVICE) {
+                    //发生多设备登录,跳转到登录界面
+                    startActivity<LoginActivity>()
+                    toast(getString(R.string.user_login_another_device))
+                    finish()
+                }
+            }
+
+        })
     }
 
     override fun onResume() {
