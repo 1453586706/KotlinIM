@@ -100,8 +100,12 @@ class ContactFragment : BaseFragment(), ContactContact.View {
 
 
     override fun onLoadContactSuccess() {
-        swipeRefreshLayout.isRefreshing = false
-        recyclerView.adapter?.notifyDataSetChanged()
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.isRefreshing = false
+        }
+        if (recyclerView != null) {
+            recyclerView.adapter?.notifyDataSetChanged()
+        }
     }
 
     override fun onLoadContactFailed() {
