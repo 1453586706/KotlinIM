@@ -2,16 +2,15 @@ package com.huluobo.lc.kotlinim.ui.activity
 
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.huluobo.lc.kotlinim.R
 import com.huluobo.lc.kotlinim.adapter.EMMessageListenerAdapter
 import com.huluobo.lc.kotlinim.adapter.MessageListAdapter
 import com.huluobo.lc.kotlinim.base.BaseActivity
 import com.huluobo.lc.kotlinim.contract.ChatContract
 import com.huluobo.lc.kotlinim.presenter.ChatPresenter
-import com.hyphenate.EMMessageListener
 import com.hyphenate.chat.EMClient
 import com.hyphenate.chat.EMMessage
 import kotlinx.android.synthetic.main.activity_chat.*
@@ -45,6 +44,8 @@ class ChatActivity : BaseActivity(), ChatContract.View {
         initRecyclerView()
         EMClient.getInstance().chatManager().addMessageListener(messageListener)
         send.setOnClickListener { send() }
+        presenter.loadMessages(username)
+
     }
 
     private fun initRecyclerView() {
@@ -52,6 +53,20 @@ class ChatActivity : BaseActivity(), ChatContract.View {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
             adapter = MessageListAdapter(context, presenter.messages)
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    //当RecyclerView是一个空闲的状态
+                    //检查是否滑动到顶部,要加在更多数据
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        //如果第一个可见条目的位置是0,为滑倒顶部
+                        val linearLayoutManager = layoutManager as LinearLayoutManager
+                        if (linearLayoutManager.findFirstVisibleItemPosition() == 0) {
+                            //加在更多数据
+                            presenter.loadMoreMessage(username)
+                        }
+                    }
+                }
+            })
         }
     }
 
@@ -115,6 +130,17 @@ class ChatActivity : BaseActivity(), ChatContract.View {
     override fun onSendMessageFailed() {
         toast(R.string.send_message_failed)
         recyclerView.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onMessageLoaded() {
+        recyclerView.adapter?.notifyDataSetChanged()
+        scrollToBottom()
+    }
+
+    override fun onMoreMessageLoaded(size: Int) {
+        recyclerView.adapter?.notifyDataSetChanged()
+        recyclerView.scrollToPosition(size)
+
     }
 
     override fun onDestroy() {

@@ -4,6 +4,7 @@ import com.huluobo.lc.kotlinim.adapter.EMCallbackAdapter
 import com.huluobo.lc.kotlinim.contract.ChatContract
 import com.hyphenate.chat.EMClient
 import com.hyphenate.chat.EMMessage
+import org.jetbrains.anko.doAsync
 
 /**
  * @author Lc
@@ -11,6 +12,9 @@ import com.hyphenate.chat.EMMessage
  * @date :2020/5/29 16:46
  */
 class ChatPresenter(val view: ChatContract.View) : ChatContract.Presenter {
+    companion object {
+        val PAGE_SIZE = 10
+    }
 
     val messages = mutableListOf<EMMessage>()
 
@@ -38,5 +42,23 @@ class ChatPresenter(val view: ChatContract.View) : ChatContract.Presenter {
         //获取跟联系人的会话,然后标记会话里面的消息全部为已读
         val conversation = EMClient.getInstance().chatManager().getConversation(username)
         conversation.markAllMessagesAsRead()//标记为已读
+    }
+
+    override fun loadMessages(username: String) {
+        doAsync {
+            val conversation = EMClient.getInstance().chatManager().getConversation(username)
+            messages.addAll(conversation.allMessages)
+            uiThread { view.onMessageLoaded() }
+        }
+    }
+
+    override fun loadMoreMessage(username: String) {
+        doAsync {
+            val conversation = EMClient.getInstance().chatManager().getConversation(username)
+            val startMsgId = messages[0].msgId
+            val loadMoreMsgFromDB = conversation.loadMoreMsgFromDB(startMsgId, PAGE_SIZE)
+            messages.addAll(0, loadMoreMsgFromDB)
+            uiThread { view.onMoreMessageLoaded(loadMoreMsgFromDB.size) }
+        }
     }
 }
