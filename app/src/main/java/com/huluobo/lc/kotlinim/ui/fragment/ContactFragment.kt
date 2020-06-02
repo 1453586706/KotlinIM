@@ -29,35 +29,30 @@ class ContactFragment : BaseFragment(), ContactContact.View {
 
     val presenter = ContactPresenter(this)
 
+    private val contactListener = object : EMContactListenterAdapter() {
+        override fun onContactDeleted(username: String?) {
+            //重新获取联系人数据
+            presenter.loadContacts()
+        }
+
+        override fun onContactAdded(username: String?) {
+            //重新获取联系人数据
+            presenter.loadContacts()
+        }
+    }
+
     override fun init() {
         super.init()
-        headerTitle.text = getString(R.string.contact)
-        add.visibility = View.VISIBLE
-        add.setOnClickListener {
-            context?.startActivity<AddFriendActivity>()
-        }
-
-        swipeRefreshLayout.apply {
-            //对当前控件或者类的创建者模式,kotlin高级语法
-            setColorSchemeResources(R.color.qq_blue)
-            isRefreshing = true
-            setOnRefreshListener { presenter.loadContacts() }
-        }
-
-        recyclerView.apply {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(context)
-            adapter = ContactListAdapter(context, presenter.contactListItems)
-        }
-
+        initHeader()
+        initSwipeRefreshLayout()
+        initRecyclerView()
         EMClient.getInstance().contactManager()
-            .setContactListener(object : EMContactListenterAdapter() {
-                override fun onContactDeleted(username: String?) {
-                    //重新获取联系人数据
-                    presenter.loadContacts()
-                }
-            })
+            .setContactListener(contactListener)
+        initSlideBar()
+        presenter.loadContacts()
+    }
 
+    private fun initSlideBar() {
         slideBar.onSectionChangeListener = object : SlideBar.OnSectionChangeListener {
             override fun onSectionChange(firstLetter: String) {
                 section.visibility = View.VISIBLE
@@ -70,10 +65,32 @@ class ContactFragment : BaseFragment(), ContactContact.View {
             override fun onSlideFinish() {
                 section.visibility = View.GONE
             }
-
         }
+    }
 
-        presenter.loadContacts()
+    private fun initRecyclerView() {
+        recyclerView.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+            adapter = ContactListAdapter(context, presenter.contactListItems)
+        }
+    }
+
+    private fun initSwipeRefreshLayout() {
+        swipeRefreshLayout.apply {
+            //对当前控件或者类的创建者模式,kotlin高级语法
+            setColorSchemeResources(R.color.qq_blue)
+            isRefreshing = true
+            setOnRefreshListener { presenter.loadContacts() }
+        }
+    }
+
+    private fun initHeader() {
+        headerTitle.text = getString(R.string.contact)
+        add.visibility = View.VISIBLE
+        add.setOnClickListener {
+            context?.startActivity<AddFriendActivity>()
+        }
     }
 
     private fun getPosition(firstLetter: String): Int =
@@ -83,12 +100,21 @@ class ContactFragment : BaseFragment(), ContactContact.View {
 
 
     override fun onLoadContactSuccess() {
-        swipeRefreshLayout.isRefreshing = false
-        recyclerView.adapter?.notifyDataSetChanged()
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.isRefreshing = false
+        }
+        if (recyclerView != null) {
+            recyclerView.adapter?.notifyDataSetChanged()
+        }
     }
 
     override fun onLoadContactFailed() {
         swipeRefreshLayout.isRefreshing = false
         context?.toast(R.string.load_contacts_failed)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EMClient.getInstance().contactManager().removeContactListener(contactListener)
     }
 }

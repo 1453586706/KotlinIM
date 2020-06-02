@@ -2,6 +2,8 @@ package com.huluobo.lc.kotlinim.presenter
 
 import com.huluobo.lc.kotlinim.contract.ContactContact
 import com.huluobo.lc.kotlinim.data.ContactListItem
+import com.huluobo.lc.kotlinim.data.db.Contact
+import com.huluobo.lc.kotlinim.data.db.IMDatabase
 import com.hyphenate.chat.EMClient
 import com.hyphenate.exceptions.HyphenateException
 import org.jetbrains.anko.doAsync
@@ -16,6 +18,10 @@ class ContactPresenter(val view: ContactContact.View) : ContactContact.Presenter
 
     override fun loadContacts() {
         doAsync {
+            //再次加载数据,先清空集合
+            contactListItems.clear()
+            //清空数据库
+            IMDatabase.instance.deleteAllContacts()
             try {
                 val usernames =
                     EMClient.getInstance().contactManager().allContactsFromServer
@@ -29,6 +35,9 @@ class ContactPresenter(val view: ContactContact.View) : ContactContact.Presenter
                     val contactListItem =
                         ContactListItem(s, s[0].toUpperCase(), showFirstLetter)//拿到每一个联系人对象(名字,首字母)
                     contactListItems.add(contactListItem)
+
+                    val contact = Contact(mutableMapOf("name" to s))
+                    IMDatabase.instance.saveContact(contact)
                 }
 
                 usernames.forEach {
